@@ -1,0 +1,11 @@
+#!/bin/bash
+#SBATCH -p debug
+#SBATCH -J UniXMD
+#SBATCH -o output.slurm
+#SBATCH -t 01:00:00
+#SBATCH -N 1
+#SBATCH --ntasks-per-node=1
+#SBATCH --mem 5GB
+
+python3 run.py > md.out
+
