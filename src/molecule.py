@@ -122,6 +122,11 @@ class Molecule(object):
         self.nac = np.zeros((self.nst, self.nst, self.nat_qm, self.ndim))
         self.nac_old = np.zeros((self.nst, self.nst, self.nat_qm, self.ndim))
         self.rho = np.zeros((self.nst, self.nst), dtype=np.complex128)
+        
+        # Complex mapping varibales: z = q + i*p
+        self.z = np.zeros((self.nst), dtype=np.complex128) # ~BMW
+        # Wavefunction overlap
+        self.overlap = np.zeros((self.nst, self.nst), dtype=np.complex128) # ~BMW
 
         self.ekin = 0.
         self.ekin_qm = 0.
