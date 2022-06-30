@@ -3,6 +3,7 @@ from qm.qchem.qchem import QChem
 from misc import au_to_A, eV_to_au
 import os, shutil, re, textwrap, subprocess
 import numpy as np
+import subprocess as sp
 
 class DFT(QChem):
     """ Class for DFT method of Q-Chem 5.2
@@ -22,12 +23,13 @@ class DFT(QChem):
         :param string version: Q-Chem version
     """
     def __init__(self, molecule, basis_set="sto-3g", memory=2000, nthreads=1, \
-        functional="blyp", scf_max_iter=50, scf_wf_tol=8, cis_max_iter=30, cis_en_tol=6, \
+        functional="B3LYP", scf_max_iter=50, scf_wf_tol=8, cis_max_iter=30, cis_en_tol=6, \
         cpscf_max_iter=30, cpscf_grad_tol=6, root_path="./", version="5.2"):
         # Initialize Q-Chem common variables
         super(DFT, self).__init__(basis_set, memory, root_path, nthreads, version)
 
         self.functional = functional
+        assert(self.functional.lower() != 'blyp'), "'BLYP' functional does not work. Not sure why. Use B3LYP." # BMW
         self.scf_max_iter = scf_max_iter
         self.nthreads = nthreads
         self.scf_wf_tol = scf_wf_tol
@@ -103,6 +105,8 @@ class DFT(QChem):
             CIS_DER_NUMSTATE {molecule.nst}
             SET_ITER {self.cpscf_max_iter}
             SET_CONV {self.cpscf_grad_tol}
+            MEM_TOTAL	4000
+            MEM_STATIC	2000
             $end
 
             $derivative_coupling
@@ -193,7 +197,10 @@ class DFT(QChem):
         #os.environ["QCLOCALSCR"] = self.scr_qm_dir
 
         #TODO: MPI binary
+        sp.call("rm ./log",shell=True)
         qm_exec_command = f"$QC/bin/qchem -nt {self.nthreads} qchem.in log save > qcprog.info "
+        #qm_exec_command = f"$QC/bin/qchem -nt {self.nthreads} qchem.in ./ > log "
+
 
         # Run Q-Chem
         os.system(qm_exec_command)
